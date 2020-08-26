@@ -1,0 +1,255 @@
+---
+title: "STAT 385 Final"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r final}
+library(shiny)
+library(tidyverse)
+library(leaflet)
+library(leaflet.extras)
+library(ggplot2)
+
+
+foodData <- read_csv("https://uofi.box.com/shared/static/5637axblfhajotail80yw7j2s4r27hxd.csv",
+                     col_types = cols(`Inspection Date` = col_date(format = "%m/%d/%Y")))
+
+foodData$Facility = foodData$`Facility Type`
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "(convenience store)", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "(gas station)", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "BAKERY/ RESTAURANT", "Bakery", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "BAKERY/DELI", "Bakery", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "BAKERY/GROCERY", "Bakery", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "bakery/restaurant", "Bakery", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "convenience", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "CONVENIENCE", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "convenience store", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "convenience/drug store", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "CONVENIENCE/GAS STATION", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "CONVENIENT STORE", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "CONVNIENCE STORE", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "CONVENIENCE STORE", "Convenience Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "gas station", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "Gas station", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION /GROCERY", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION /SUBWAY MINI MART.", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION STORE", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION/ GROCERY STORE", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION/FOOD", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION/MINI MART", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION/RESTAURANT", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION/STORE", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GAS STATION/STORE GROCERY", "Gas Station", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "grocery", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "grocery & restaurant", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "Grocery & Restaurant", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY & RESTAURANT", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY AND BUTCHER", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE / GAS STATION", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE/ RESTAURANT", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE/BAKERY", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "grocery/butcher", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE/COOKING SCHOOL", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE/DELI", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE/GAS STATION", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY STORE/TAQUERIA", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY(GAS STATION)", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "Grocery(Sushi prep)", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/CAFE", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "grocery/dollar store", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/DRUG STORE", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/GAS STATION", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/LIQUOR", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/LIQUOR STORE", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/RESTAURANT", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/SERVICE GAS STATION", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/TAQUERIA", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/TAVERN", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY& RESTAURANT", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/ RESTAURANT", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "GROCERY/BAKERY", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "grocery/butcher", "Grocery Store", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT AND LIQUOR", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT.BANQUET HALLS", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "Restaurant(protein shake bar)", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/BAKERY", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/BAR", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/BAR/THEATER", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/GAS STATION", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/GROCERY", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/GROCERY STORE", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/HOSPITAL", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTAURANT/LIQUOR", "Restaurant", foodData$`Facility`)
+
+foodData$`Facility` = ifelse(foodData$`Facility Type` == "RESTUARANT AND BAR", "Restaurant", foodData$`Facility`)
+
+filteredFoodData = filter(foodData, Facility == "Convenience Store" | Facility == "Bakery" | Facility == "Gas Station" | Facility == "Grocery Store" | Facility == "Restaurant")
+
+
+nonDup = filteredFoodData[!duplicated(filteredFoodData$`License #`),]
+colnames(nonDup) <- tolower(colnames(nonDup))
+CFI <- nonDup[,-c(17:22)]
+CFI <- filter(CFI, CFI$results!= "Business Not Located" & CFI$results!="No Entry" & CFI$results!="Not Ready" & CFI$results!="Out of Business" & CFI$risk != "All")
+removeNA <- apply(cbind(complete.cases(CFI$latitude), complete.cases(CFI$longitude)), 1, all)
+CFI <- CFI[removeNA, ]
+
+
+ui = navbarPage("Chicago Food Data", id = "nav",
+                tabPanel("Interactive Map", 
+                      div(class = "outer",
+                      leafletOutput("map", width = 2000, height = 1000),
+                      absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+                                  draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+                                  width = 330, height = "auto", ("Options"),
+                                           
+                                     selectInput('var', 'Select Facilities to Display', choices = levels(factor(CFI$facility)), selected = levels(factor(CFI$facility)), multiple = TRUE),
+                                           
+                                     selectInput("risk","Select Level of Risk",choices = levels(factor(CFI$risk)), selected = levels(factor(CFI$risk)), multiple = TRUE),
+                                       
+                                     selectInput("results","Select Result of Inspection",choices = levels(factor(CFI$results)), selected = levels(factor(CFI$results)), multiple = TRUE),
+                                           
+                                     selectInput("zip","Select Zip Code", choices = levels(factor(CFI$zip)), selected = c(60601, 60602, 60603), multiple = TRUE),
+                                           
+                                     checkboxInput("legend", "Show legend", TRUE)
+                                    ),
+                      
+                      absolutePanel(id = "stats", class = "panel panel-default", fixed = TRUE,
+                                    draggable = TRUE, top = 'auto', left = 20, right = 'auto', bottom = 40,
+                                    width = 280, height = "auto",
+                                    plotOutput(outputId = 'bar')
+                                    )
+                         )
+                        )
+                )
+
+server <- function(input, output) {
+  pal = colorFactor(palette = c('red', 'blue', 'gold'), domain = CFI$results)
+  
+  CFI_filtered <- reactive({
+    CFI %>%
+      filter(facility %in% input$var,
+             risk %in% input$risk,
+             results %in% input$results,
+             zip %in% input$zip)
+    })  
+  
+  content <- reactive({
+    paste(CFI_filtered()$'aka name', "<br>",
+          CFI_filtered()$address, "<br>",
+          "Inspection Result:", CFI_filtered()$results, "<br>",
+          "Risk Level:", CFI_filtered()$risk, "<br>",
+          "Facility Type:", CFI_filtered()$facility)
+  })
+
+  
+  map = leaflet() %>%  
+          addTiles() %>% 
+            setView(lng = -87.618, lat = 41.885, zoom = 14.33) 
+  
+  
+  output$map <- renderLeaflet(map)
+  
+  output$bar <- renderPlot({
+    barplot(table(CFI_filtered()$results, CFI_filtered()$risk), 
+            main = 'Risk Frequency in Selected Zip Codes', 
+            col = c('blue', 'gold', 'red'))
+  })
+  
+  observe({
+    proxy = leafletProxy("map", 
+                         data = CFI_filtered()) %>% 
+                                  clearShapes() %>% 
+                                    addCircles(lat = ~ latitude, lng = ~ longitude, weight = 1, radius = 20, color = ~pal(results), fillOpacity = 0.5, popup = content())
+    
+    proxy %>% clearControls() 
+    
+    if (input$legend) {
+      proxy %>% addLegend("topleft", colors = c("Blue", "Gold", "Red"), labels = c("Pass", "Pass w/ Conditions", "Fail"))
+    }
+    
+  })
+  
+  
+}
+
+shinyApp(ui, server)
+
+
+
+
+```
+
